@@ -1,0 +1,11 @@
+{
+  "name": "QAT Int5-MLP Int6-Attn + BigramHash(10240) + SWA(0.4) + WD=0.04",
+  "val_bpb": null,
+  "val_loss": null,
+  "bytes_total": null,
+  "blurb": "STE QAT (int5 MLP, int6 attn/bigram) with fp16-matched scales, progressive QAT ramp (2500 steps), no QAT on blocks.(N-2).attn.c_k to match fp16 export, cosine warmdown, train-only label smoothing 0.02, sliding eval stride=48, SWA 0.4/50, Muon+AdamW WD=0.04, zstd-22. FP16 keep patterns derived from NUM_LAYERS.",
+  "author": "sandracai",
+  "github_id": "sandracai",
+  "date": "2026-04-06",
+  "notes": "Iterated recipe: progressive QAT, export-aligned c_k, cosine warmdown, train-only label smoothing, stride-48 eval. Projected val_bpb ~1.125-1.135 pending 8xH100 runs (3 seeds)."
+}
