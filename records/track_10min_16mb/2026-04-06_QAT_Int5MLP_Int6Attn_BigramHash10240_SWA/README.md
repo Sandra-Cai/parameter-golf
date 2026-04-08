@@ -99,10 +99,15 @@ Conservative estimate: QAT reduces the quantization gap from ~0.02 BPB to ~0.002
 
 This exceeds the required 0.005 nats improvement for SOTA.
 
+## Branch
+
+Ongoing work for this record lives on Git branch **`submission/qat-int5-int6`** (PRs can target `openai/parameter-golf:main` from that branch after you attach train logs).
+
 ## Run Command
 
 ```bash
-pip install zstandard
+pip install -r records/track_10min_16mb/2026-04-06_QAT_Int5MLP_Int6Attn_BigramHash10240_SWA/requirements.txt
+# or: pip install zstandard
 
 RUN_ID=qat_int5mlp_int6attn \
 DATA_PATH=./data/datasets/fineweb10B_sp1024 \

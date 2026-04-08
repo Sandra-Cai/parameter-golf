@@ -1,0 +1,2 @@
+# Record-only extras (RunPod / challenge images already ship torch, numpy, sentencepiece, etc.)
+zstandard>=0.22

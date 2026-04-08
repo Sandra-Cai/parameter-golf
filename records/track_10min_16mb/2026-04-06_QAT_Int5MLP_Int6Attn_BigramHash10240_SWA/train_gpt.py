@@ -37,6 +37,9 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
+# Challenge artifact cap (decimal MB): UTF-8 code bytes + zlib/zstd model blob.
+SUBMISSION_BYTE_CAP = 16_000_000
+
 # -----------------------------
 # HYPERPARAMETERS
 # -----------------------------
@@ -1293,6 +1296,8 @@ def main() -> None:
         f"peak memory allocated: {torch.cuda.max_memory_allocated() // 1024 // 1024} MiB "
         f"reserved: {torch.cuda.max_memory_reserved() // 1024 // 1024} MiB"
     )
+    approx_train_tokens = int(step) * int(args.train_batch_tokens)
+    log0(f"train_steps_completed:{step} approx_train_tokens:{approx_train_tokens}")
 
     if args.swa_enabled and swa_state is not None and swa_count > 1:
         log0(f"swa:applying averaged {swa_count} checkpoints")
@@ -1341,7 +1346,13 @@ def main() -> None:
         code_bytes = len(code.encode("utf-8"))
         log0(f"export_fp16_keep:{' '.join(fp16_keep)}")
         log0(f"Serialized model int5/int6+{_COMPRESSOR}: {quant_file_bytes} bytes")
-        log0(f"Total submission size: {quant_file_bytes + code_bytes} bytes")
+        total_artifact = quant_file_bytes + code_bytes
+        log0(f"Total submission size: {total_artifact} bytes")
+        if total_artifact > SUBMISSION_BYTE_CAP:
+            log0(
+                f"WARNING: artifact exceeds {SUBMISSION_BYTE_CAP} byte cap by "
+                f"{total_artifact - SUBMISSION_BYTE_CAP} bytes — raise prune / quant aggressiveness"
+            )
 
     if distributed:
         dist.barrier()
